@@ -1,16 +1,10 @@
-os
 langchain_core
 langchain_text_splitters
-re
-typing
 langchain_gigachat
-operator
 langgraph
 langchain_chroma
-asyncio
 aiogram
 requests
 bs4
 transformers
 torch
-requests
