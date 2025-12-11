@@ -8,6 +8,8 @@ from aiogram.filters import Command
 import re
 from agent import city_agent
 from langchain_core.messages import HumanMessage
+# from dotenv import load_dotenv
+# load_dotenv()
 
 TG_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
@@ -57,10 +59,10 @@ async def handle_message(message: Message):
 
     try:
         result = city_agent.invoke(
-            {"messages": [HumanMessage(content=user_text)]},
-            config={"thread_id": str(user_id)}
+            {"messages": [HumanMessage(content=user_text)]}
+            # ,
+            # config={"thread_id": str(user_id)}
         )
-
         answer = result["messages"][-1].content
         answer = clean_html(answer)
         answer = answer.replace("#", "")

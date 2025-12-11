@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  bot:
+    build: .
+    container_name: my-spb-agent
+    restart: unless-stopped
+
+    environment:
+      TELEGRAM_BOT_TOKEN: "${TELEGRAM_BOT_TOKEN}"
+      GIGACHAT_API_KEY: "${GIGACHAT_API_KEY}"
+      GIGACHAT_EMBEDDINGS_KEY: "${GIGACHAT_EMBEDDINGS_KEY}"
+
+    volumes:
+      - ./data:/app/data

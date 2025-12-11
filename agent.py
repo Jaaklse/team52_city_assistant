@@ -1,3 +1,4 @@
+import zipfile
 import os
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -10,8 +11,11 @@ from operator import add as add_messages
 from langgraph.graph import StateGraph, END
 from langchain_chroma import Chroma
 from toxicity_test import check_toxicity
+# from dotenv import load_dotenv
+# load_dotenv()
 
 GIGACHAT_KEY = os.getenv("GIGACHAT_API_KEY")
+GIGACHAT_EMBEDD_KEY = os.getenv("GIGACHAT_EMBEDDINGS_KEY")
 
 model = GigaChat(
     credentials=GIGACHAT_KEY,
@@ -21,7 +25,7 @@ model = GigaChat(
 model.model = "GigaChat-2"
 
 embeddings = GigaChatEmbeddings(
-    credentials=GIGACHAT_KEY,
+    credentials=GIGACHAT_EMBEDD_KEY,
     verify_ssl_certs=False
 )
 
@@ -70,7 +74,10 @@ for doc in docs:
             )
         )
 
+ 
 PERSIST_DIR = "data/chroma_db"
+
+
 
 if os.path.exists(PERSIST_DIR):
     print("Найдена существующая база Chroma")
@@ -87,16 +94,6 @@ else:
         persist_directory=PERSIST_DIR
     )
     print("База создана")
-# try:
-#     vectorstore = Chroma.from_documents(
-#         documents=final_docs,
-#         embedding=embeddings,
-#         persist_directory="chroma_db"
-#     )
-#     print("Векторное хранилище создано успешно")
-# except Exception as e:
-#     print(f"Ошибка при создании векторного хранилища - {e}")
-#     raise
 
 retriever = vectorstore.as_retriever(
     search_type="mmr",
