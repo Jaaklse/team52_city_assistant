@@ -11,8 +11,8 @@ from operator import add as add_messages
 from langgraph.graph import StateGraph, END
 from langchain_chroma import Chroma
 from toxicity_test import check_toxicity
-# from dotenv import load_dotenv
-# load_dotenv()
+from dotenv import load_dotenv
+load_dotenv()
 
 GIGACHAT_KEY = os.getenv("GIGACHAT_API_KEY")
 GIGACHAT_EMBEDD_KEY = os.getenv("GIGACHAT_EMBEDDINGS_KEY")
@@ -206,3 +206,21 @@ graph.add_edge("retriever_agent", "llm")
 graph.set_entry_point("start_node")
 
 city_agent = graph.compile()
+
+# def running_agent():
+#     print("\n=== Городской помощник ===")
+
+#     while True:
+#         user_input = input("\nКакой у Вас вопрос: ")
+#         if user_input.lower() in ['exit', 'quit', 'выход', 'выйти', 'конец']:
+#             break
+
+#         messages = [HumanMessage(content=user_input)]
+
+#         result = city_agent.invoke({"messages": messages})
+
+#         print("\n=== ОТВЕТ ===")
+#         print(result['messages'][-1].content)
+#         print(result['messages'][-1])
+
+# running_agent()

@@ -8,8 +8,8 @@ from aiogram.filters import Command
 import re
 from agent import city_agent
 from langchain_core.messages import HumanMessage
-# from dotenv import load_dotenv
-# load_dotenv()
+from dotenv import load_dotenv
+load_dotenv()
 
 TG_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
@@ -47,34 +47,39 @@ async def cmd_start(message: Message):
     )
 
 
+user_states = {}  # user_id -> AgentState
+
 @dp.message()
 async def handle_message(message: Message):
-    user_text = message.text
     user_id = message.from_user.id
+    user_text = message.text
 
-    if user_state.get(user_id, False):
-        user_state[user_id] = False
+    if user_id not in user_states:
+        user_states[user_id] = {"messages": []}
+
+    state = user_states[user_id]
+
+    state["messages"].append(HumanMessage(content=user_text))
 
     await message.answer("⏳ Думаю...")
 
     try:
-        result = city_agent.invoke(
-            {"messages": [HumanMessage(content=user_text)]}
-            # ,
-            # config={"thread_id": str(user_id)}
-        )
-        answer = result["messages"][-1].content
-        answer = clean_html(answer)
-        answer = answer.replace("#", "")
+        result = city_agent.invoke(state)
+        answer_message = result["messages"][-1]
+        if (answer_message.content == user_text):
+            answer_message.content = "Вы слышком грубы! Общайтесь вежливее, мы же говорим о культурной столице!"
+            state["messages"].append(answer_message)
 
-        await message.answer(answer)
+        answer_text = answer_message.content
+        answer_text = clean_html(answer_text)
+        answer_text = answer_text.replace("#", "")
+
+        await message.answer(answer_text)
 
     except Exception as e:
         print(f"Ошибка LLM/агента: {e}")
-
         await message.answer(
-            "❗ Произошла ошибка при обработке запроса.\n"
-            "Попробуйте ещё раз, возможно, немного уточнив формулировку"
+            "❗ Произошла ошибка при обработке запроса.\nПопробуйте ещё раз"
         )
 
 async def main():
