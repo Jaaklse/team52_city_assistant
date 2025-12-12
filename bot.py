@@ -6,6 +6,7 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.types import Message
 from aiogram.filters import Command
 import re
+import time
 from agent import city_agent
 from langchain_core.messages import HumanMessage
 from dotenv import load_dotenv
@@ -51,6 +52,7 @@ user_states = {}  # user_id -> AgentState
 
 @dp.message()
 async def handle_message(message: Message):
+    start_time = time.perf_counter()
     user_id = message.from_user.id
     user_text = message.text
 
@@ -73,14 +75,17 @@ async def handle_message(message: Message):
         answer_text = answer_message.content
         answer_text = clean_html(answer_text)
         answer_text = answer_text.replace("#", "")
-
-        await message.answer(answer_text)
+        end_time = time.perf_counter()
+        duration = end_time - start_time
+        print(f"Время ответа агента - {duration:4f} секунд")
+        await message.answer(answer_text+f"\n\nДумал {duration:4f} секунд")
 
     except Exception as e:
         print(f"Ошибка LLM/агента: {e}")
         await message.answer(
             "❗ Произошла ошибка при обработке запроса.\nПопробуйте ещё раз"
         )
+
 
 async def main():
     print("Бот запущен!")
