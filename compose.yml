@@ -6,6 +6,9 @@ services:
     container_name: my-spb-agent
     restart: unless-stopped
 
+    env_file:
+      - .env
+
     environment:
       TELEGRAM_BOT_TOKEN: "${TELEGRAM_BOT_TOKEN}"
       GIGACHAT_API_KEY: "${GIGACHAT_API_KEY}"
